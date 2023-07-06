@@ -30,10 +30,13 @@ class AlbumsHandler {
   async getAlbumByIdHandler(request) {
     const { id } = request.params;
     const album = await this._service.getAlbumById(id);
+    const song = await this._service.getSongByAlbumId(id);
+    const getDetails = { ...album, song };
     return {
       status: 'success',
+      message: 'Mendapatkan album berdasarkan id',
       data: {
-        album,
+        album: getDetails,
       },
     };
   }
@@ -41,7 +44,7 @@ class AlbumsHandler {
   async putAlbumByIdHandler(request) {
     this._validator.validateAlbumPayload(request.payload);
     const { id } = request.params;
-    await this._service.editAlbumById(id, request.payload);
+    await this._service.editAlbumById(id, { name, year });
     return {
       status: 'success',
       message: 'Mengubah album berdasarkan id',
