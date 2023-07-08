@@ -3,16 +3,11 @@ const routes = (handler) => [
     method: 'POST',
     path: '/albums',
     handler: (request, h) => handler.postAlbumHandler(request, h),
-    options: {
-      cors: {
-        origin: ['*'],
-      },
-    },
   },
   {
     method: 'GET',
-    path: '/albums/',
-    handler: (request, h) => handler.getAlbumHandler(request, h),
+    path: '/albums',
+    handler: (request, h) => handler.getAlbumsHandler(request, h),
   },
   {
     method: 'GET',

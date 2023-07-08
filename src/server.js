@@ -1,17 +1,16 @@
 require('dotenv').config();
 
 const Hapi = require('@hapi/hapi');
+
 const albums = require('./api/albums');
-const AlbumsService = require('./services/postgres/AlbumsService');
+const AlbumsService = require('./services/AlbumsService');
 const AlbumsValidator = require('./validator/albums');
+
 const ClientError = require('./exceptions/ClientError');
-const songs = require('./api/songs');
-const SongsService = require('./services/postgres/SongsService');
-const SongsValidator = require('./validator/songs');
 
 const init = async () => {
   const albumsService = new AlbumsService();
-  const songsService = new SongsService();
+
   const server = Hapi.server({
     port: process.env.PORT,
     host: process.env.HOST,
@@ -23,13 +22,6 @@ const init = async () => {
   });
 
   await server.register([
-    {
-      plugin: songs,
-      options: {
-        service: songsService,
-        validator: SongsValidator,
-      },
-    },
     {
       plugin: albums,
       options: {
@@ -45,20 +37,24 @@ const init = async () => {
     if (response instanceof Error) {
       // penanganan client error secara internal.
       if (response instanceof ClientError) {
-        return h.response({
+        const newResponse = h.response({
           status: 'fail',
           message: response.message,
-        }).code(response.statusCode);
+        });
+        newResponse.code(response.statusCode);
+        return newResponse;
       }
       // mempertahankan penanganan client error oleh hapi secara native, seperti 404, etc.
       if (!response.isServer) {
         return h.continue;
       }
       // penanganan server error sesuai kebutuhan
-      return h.response({
+      const newResponse = h.response({
         status: 'error',
         message: 'terjadi kegagalan pada server kami',
-      }).code(500);
+      });
+      newResponse.code(500);
+      return newResponse;
     }
     // jika bukan error, lanjutkan dengan response sebelumnya (tanpa terintervensi)
     return h.continue;
