@@ -1,7 +1,7 @@
 const { nanoid } = require('nanoid');
 const { Pool } = require('pg');
 
-const { mapDBAlbumsToModel } = require('../utils');
+const { mapDBToAlbumsService, mapDBToAlbumSongService } = require('../utils');
 
 const InvariantError = require('../exceptions/InvariantError');
 const NotFoundError = require('../exceptions/NotFoundError');
@@ -32,7 +32,7 @@ class AlbumsService {
 
   async getAlbums() {
     const result = await this._pool.query('SELECT * FROM albums');
-    return result.rows.map(mapDBAlbumsToModel);
+    return result.rows.map(mapDBToAlbumsService);
   }
 
   async getAlbumById(id) {
@@ -46,11 +46,12 @@ class AlbumsService {
     if (!result.rows.length) {
       throw new NotFoundError('Album tidak ditemukan');
     }
-    return result.rows.map(mapDBAlbumsToModel)[0];
+    return result.rows.map(mapDBToAlbumsService)[0];
   }
 
   async editAlbumById(id, { name, year }) {
     const updatedAt = new Date().toISOString();
+
     const query = {
       text: 'UPDATE albums SET name = $1, year = $2, updated_at = $3 WHERE id = $4 RETURNING id',
       values: [name, year, updatedAt, id],
@@ -62,7 +63,7 @@ class AlbumsService {
       throw new NotFoundError('Gagal memperbarui album. id tidak ditemukan');
     }
 
-    return result.rows.map(mapDBAlbumsToModel)[0];
+    return result.rows.map(mapDBToAlbumsService)[0];
   }
 
   async deleteAlbumById(id) {
@@ -77,7 +78,18 @@ class AlbumsService {
       throw new NotFoundError('Album tidak ditemukan');
     }
 
-    return result.rows.map(mapDBAlbumsToModel)[0];
+    return result.rows.map(mapDBToAlbumsService)[0];
+  }
+
+  async getSongByAlbumId(id) {
+    const query = {
+      text: 'SELECT id, title, performer FROM songs WHERE album_id = $1',
+      values: [id],
+    };
+
+    const result = await this._pool.query(query);
+
+    return result.rows.map(mapDBToAlbumSongService);
   }
 }
 

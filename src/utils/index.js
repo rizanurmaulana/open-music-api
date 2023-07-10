@@ -1,6 +1,16 @@
 /* eslint-disable camelcase */
 
-const mapDBAlbumsToModel = ({
+const mapDBToAlbumsService = ({
+  id,
+  name,
+  year,
+}) => ({
+  id,
+  name,
+  year,
+});
+
+const mapDBToSongsService = ({
   id,
   title,
   year,
@@ -18,4 +28,14 @@ const mapDBAlbumsToModel = ({
   albumId: album_id,
 });
 
-module.exports = { mapDBAlbumsToModel };
+const mapDBToAlbumSongService = ({
+  id,
+  title,
+  performer,
+}) => ({
+  id,
+  title,
+  performer,
+});
+
+module.exports = { mapDBToAlbumsService, mapDBToSongsService, mapDBToAlbumSongService };
