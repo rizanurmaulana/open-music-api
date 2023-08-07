@@ -31,14 +31,14 @@ class AlbumsHandler {
 
   async getAlbumByIdHandler(request) {
     const { id } = request.params;
-
     const album = await this._service.getAlbumById(id);
-
+    const songs = await this._service.getSongByAlbumId(id);
+    const getDetailAlbum = { ...album, songs };
     return {
       status: 'success',
-      message: 'Mendapatkan album berdasarkan id',
+      message: 'mendapatkan album berdasarkan id',
       data: {
-        album,
+        album: getDetailAlbum,
       },
     };
   }
