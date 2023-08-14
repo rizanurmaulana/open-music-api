@@ -17,7 +17,7 @@ const mapDBToSongsService = ({
   performer,
   genre,
   duration,
-  album_id,
+  albumId,
 }) => ({
   id,
   title,
@@ -25,7 +25,7 @@ const mapDBToSongsService = ({
   performer,
   genre,
   duration,
-  albumId: album_id,
+  albumId,
 });
 
 const mapDBToAlbumSongService = ({
@@ -38,4 +38,8 @@ const mapDBToAlbumSongService = ({
   performer,
 });
 
-module.exports = { mapDBToAlbumsService, mapDBToSongsService, mapDBToAlbumSongService };
+module.exports = {
+  mapDBToAlbumsService,
+  mapDBToSongsService,
+  mapDBToAlbumSongService,
+};
