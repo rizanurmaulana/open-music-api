@@ -1,5 +1,3 @@
-const ClientError = require('../../exceptions/ClientError');
-
 class PlaylistsHandler {
   constructor(service, validator) {
     this._service = service;
@@ -7,42 +5,20 @@ class PlaylistsHandler {
   }
 
   async postPlaylistHandler(request, h) {
-    try {
-      this._validator.validatePlaylistPayload(request.payload);
+    this._validator.validatePlaylistPayload(request.payload);
 
-      const { name } = request.payload;
-      const { id: credentialId } = request.auth.credentials;
+    const { name } = request.payload;
+    const { id: credentialId } = request.auth.credentials;
 
-      const playlistId = await this._service.addPlaylist({ name, owner: credentialId });
+    const playlistId = await this._service.addPlaylist({ name, owner: credentialId });
 
-      return h.response({
-        status: 'success',
-        message: 'Playlist berhasil ditambahkan',
-        data: {
-          playlistId,
-        },
-      }).code(201);
-    } catch (error) {
-      if (error instanceof ClientError) {
-        const newResponse = h.response({
-          status: 'fail',
-          message: error.message,
-        });
-        newResponse.code(error.statusCode);
-        return newResponse;
-      }
-      // mempertahankan penanganan client error oleh hapi secara native, seperti 404, etc.
-      if (!error.isServer) {
-        return h.continue;
-      }
-      // penanganan server error sesuai kebutuhan
-      const newResponse = h.response({
-        status: 'error',
-        message: 'terjadi kegagalan pada server kami',
-      });
-      newResponse.code(500);
-      return newResponse;
-    }
+    return h.response({
+      status: 'success',
+      message: 'Playlist berhasil ditambahkan',
+      data: {
+        playlistId,
+      },
+    }).code(201);
   }
 
   async getPlaylistHandler(request) {
